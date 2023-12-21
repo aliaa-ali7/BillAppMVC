@@ -1,0 +1,111 @@
+﻿@model IEnumerable<PillApp.Models.BillVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="btns ">
+    <a class="btn btn-info text-white" asp-action="Create">Create New</a>
+    <a class="btn btn-success text-white" href="javascript:window.print()">Click to Print This Page</a>
+    <a class="btn btn-primary" href="javascript:history.go(-1)">Go back</a>
+    <a class="btn btn-danger" href="#" onclick="closeWindow();">Exit</a>
+</div>
+<br />
+<h1>الفاتورة</h1>
+<hr /> 
+        <dl>
+        <dd>
+           <span class="h4 text-info">Name : </span> @Model.FirstOrDefault().Customer.Name
+        </dd>
+        <dd>
+        <span class="h4 text-info">Date : </span> @Model.FirstOrDefault().DateBill
+        </dd>
+    </dl>
+    <br />
+
+<form method="get" action="@Url.Action("Index", "BillVMs")" class="m-3">
+    <label for="search">Search</label>
+    <input type="text" name="searchTerm" id="searchTerm" />
+    <button class="btn btn-info" type="submit">Perform search</button>
+</form>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Num
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.Code)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                Value
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Code)
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Name)
+                </td>
+            <td>
+                    <a class="btn btn-info text-white" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a class="btn btn-warning text-white" asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a class="btn btn-danger text-white" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+
+<dl>
+    <dd>
+        <span class="h4 text-info">Total Quantity : </span> @foreach (var item in Model) {
+        <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Name)
+                </td>
+                </tr>
+        }
+    </dd>
+    <dd>
+        <span class="h4 text-info">Total Price : </span> @Model.Sum(i=>i.Value)
+    </dd>
+</dl>
+
+<script>
+    function closeWindow() {
+        window.close();
+    }
+</script>

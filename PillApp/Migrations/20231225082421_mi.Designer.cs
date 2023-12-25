@@ -3,21 +3,50 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PillApp.Models;
 
 namespace PillApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231225082421_mi")]
+    partial class mi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("PillApp.Models.Bill", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateBill")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Bills");
+                });
 
             modelBuilder.Entity("PillApp.Models.BillVM", b =>
                 {
@@ -50,7 +79,7 @@ namespace PillApp.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("BillVM");
+                    b.ToTable("BillViewModel");
                 });
 
             modelBuilder.Entity("PillApp.Models.Customer", b =>
@@ -75,6 +104,9 @@ namespace PillApp.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("BillId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Code")
                         .HasColumnType("int");
 
@@ -82,6 +114,8 @@ namespace PillApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BillId");
 
                     b.ToTable("Products");
                 });
@@ -120,6 +154,13 @@ namespace PillApp.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("PillApp.Models.Product", b =>
+                {
+                    b.HasOne("PillApp.Models.Bill", null)
+                        .WithMany("Products")
+                        .HasForeignKey("BillId");
+                });
+
             modelBuilder.Entity("PillApp.Models.ProductCustomer", b =>
                 {
                     b.HasOne("PillApp.Models.Customer", "Customer")
@@ -137,6 +178,11 @@ namespace PillApp.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("PillApp.Models.Bill", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("PillApp.Models.Customer", b =>

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCore.Reporting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +14,14 @@ namespace PillApp.Controllers
     public class BillVMsController : Controller
     {
         private readonly AppDbContext _context;
+         IWebHostEnvironment webHostEnvironment;
+       
 
-        public BillVMsController(AppDbContext context)
+        public BillVMsController(AppDbContext context, IWebHostEnvironment webHostEnvi)
         {
             _context = context;
+            webHostEnvironment = webHostEnvi;
+
         }
 
         // GET: BillVMs
@@ -82,8 +88,7 @@ namespace PillApp.Controllers
         }
 
         // POST: BillVMs/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,CustomerId,ProductId,Quantity,Price,DateBill")] BillVM billVM)
@@ -118,8 +123,7 @@ namespace PillApp.Controllers
         }
 
         // POST: BillVMs/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CustomerId,ProductId,Quantity,Price,DateBill")] BillVM billVM)
@@ -197,20 +201,21 @@ namespace PillApp.Controllers
         }
 
 
-        //[HttpGet]
-        //public async Task<IActionResult> Index(string? searchString)
-        //{
-        //    var products = from m in _context.Products where m.Name == searchString
-        //                 select m;
+        public IActionResult Print()
+        {
 
-        //    if (!string.IsNullOrEmpty(searchString))
-        //    {
-        //        products = products.Where(m => m.Name.Contains(searchString));
-        //    }
+            string path = webHostEnvironment.WebRootPath + @"\Report\BillReport.rdlc";
+        Dictionary<string, string> parameters = new Dictionary<string, string>();
+        parameters.Add("Param", "Bill RDLC Report");
+            var data = _context.BillVMs;
 
-        //    return View(await products.ToListAsync());
-        //}
+        LocalReport localReport = new LocalReport(path);
+        localReport.AddDataSource("BillDataSet", data);
+            var report = localReport.Execute(RenderType.Pdf, 1, parameters, "");
+
+            return File(report.MainStream, "application/pdf");
 
 
+        }
     }
 }

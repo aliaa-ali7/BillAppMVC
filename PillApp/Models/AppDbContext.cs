@@ -12,7 +12,8 @@ namespace PillApp.Models
         public DbSet<Product> Products { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<ProductCustomer> ProductCustomers { get; set; }
-        public DbSet<Bill> Bills { get; set; }
+        //public DbSet<Bill> Bills { get; set; }
+        public DbSet<BillVM> BillVMs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
